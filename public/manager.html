@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager - Penguin Status</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Light theme styles */
+        .light-theme {
+            --bg-color: #ffffff;
+            --card-bg: #f0f8ff;
+            --text-color: #4169e1;
+            --text-secondary: #6495ed;
+            --border-color: #b0c4de;
+            --accent-color: #1e90ff;
+            --success-color: #28a745;
+            --warning-color: #87ceeb;
+            --danger-color: #4682b4;
+            --hover-bg: #e6f3ff;
+        }
+        
+        .light-theme {
+            background-color: var(--bg-color) !important;
+            color: var(--text-color) !important;
+        }
+        
+        .light-theme .bg-dark {
+            background-color: var(--bg-color) !important;
+            color: var(--text-color) !important;
+        }
+        
+        .light-theme .bg-secondary {
+            background-color: var(--card-bg) !important;
+            color: var(--text-color) !important;
+        }
+        
+        .light-theme .text-light {
+            color: var(--text-color) !important;
+        }
+        
+        .light-theme .card {
+            border-color: var(--border-color) !important;
+        }
+        
+        .light-theme .form-control {
+            background-color: var(--bg-color) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-color) !important;
+        }
+        
+        .light-theme .form-select {
+            background-color: var(--bg-color) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-color) !important;
+        }
+        
+        .light-theme .list-group-item {
+            background-color: var(--card-bg) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-color) !important;
+        }
+        
+        .light-theme .list-group-item:hover {
+            background-color: var(--hover-bg) !important;
+        }
+        
+        .light-theme .btn-primary {
+            background-color: var(--accent-color) !important;
+            border-color: var(--accent-color) !important;
+        }
+        
+        .light-theme .btn-success {
+            background-color: var(--success-color) !important;
+            border-color: var(--success-color) !important;
+        }
+        
+        .light-theme .btn-danger {
+            background-color: var(--danger-color) !important;
+            border-color: var(--danger-color) !important;
+        }
+        
+        .light-theme .badge {
+            background-color: var(--accent-color) !important;
+        }
+    </style>
+</head>
+<body class="bg-dark text-light">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                🐧
+                Penguin Status - Manager
+            </a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text me-3">
+                    <i class="fas fa-user me-2"></i>
+                    Welcome, <span id="userName">Guest</span>
+                </span>
+                <button class="theme-toggle me-3" onclick="toggleTheme()" title="Toggle Theme">
+                    <i class="fas fa-sun" id="themeIcon"></i>
+                </button>
+                <button class="btn btn-outline-light btn-sm me-2" onclick="window.location.href='/'">
+                    <i class="fas fa-arrow-left me-1"></i>
+                    Back to Dashboard
+                </button>
+                <button class="btn btn-outline-light btn-sm" id="logoutBtn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt me-2"></i>
+                    Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3">
+                <div class="card bg-secondary">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-cog me-2"></i>Management</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush">
+                            <a href="#" class="list-group-item list-group-item-action bg-secondary text-light active" onclick="showSection('changePassword')">
+                                <i class="fas fa-key me-2"></i>Change Password
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action bg-secondary text-light" id="userManagementLink" onclick="showSection('userManagement')">
+                                <i class="fas fa-users me-2"></i>User Management
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="col-md-9">
+                <!-- Change Password Section -->
+                <div id="changePasswordSection" class="section">
+                    <div class="card bg-secondary">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-key me-2"></i>Change Password</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="changePasswordForm">
+                                <div class="mb-3">
+                                    <label for="currentPassword" class="form-label">Current Password</label>
+                                    <input type="password" class="form-control" id="currentPassword" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="newPassword" class="form-label">New Password</label>
+                                    <input type="password" class="form-control" id="newPassword" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                                    <input type="password" class="form-control" id="confirmPassword" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>Change Password
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Management Section -->
+                <div id="userManagementSection" class="section" style="display: none;">
+                    <div class="card bg-secondary">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-users me-2"></i>User Management</h5>
+                            <button class="btn btn-success btn-sm" onclick="showAddUserForm()">
+                                <i class="fas fa-plus me-1"></i>Add User
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <!-- Add User Form (Initially Hidden) -->
+                            <div id="addUserForm" style="display: none;" class="mb-4">
+                                <div class="card bg-dark">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">Add New User</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <form id="addUserFormElement">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label for="addUsername" class="form-label">Username</label>
+                                                        <input type="text" class="form-control" id="addUsername" required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label for="addPassword" class="form-label">Password</label>
+                                                        <input type="password" class="form-control" id="addPassword" required>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="addRole" class="form-label">Role</label>
+                                                <select class="form-select" id="addRole" required>
+                                                    <option value="user">User</option>
+                                                    <option value="admin">Admin</option>
+                                                </select>
+                                            </div>
+                                            <div class="d-flex gap-2">
+                                                <button type="submit" class="btn btn-success">
+                                                    <i class="fas fa-plus me-1"></i>Add User
+                                                </button>
+                                                <button type="button" class="btn btn-secondary" onclick="hideAddUserForm()">
+                                                    <i class="fas fa-times me-1"></i>Cancel
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Users List -->
+                            <div id="usersList">
+                                <!-- Users will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        class ManagerApp {
+            constructor() {
+                this.authToken = localStorage.getItem('authToken');
+                this.user = JSON.parse(localStorage.getItem('user') || 'null');
+                this.init();
+            }
+
+            init() {
+                this.checkAuth();
+                this.updateUI();
+                this.setupEventListeners();
+                this.loadUsers();
+            }
+
+            checkAuth() {
+                if (!this.authToken || !this.user) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+            }
+
+            updateUI() {
+                const userNameElement = document.getElementById('userName');
+                const userManagementLink = document.getElementById('userManagementLink');
+                
+                if (userNameElement) {
+                    userNameElement.textContent = this.user.username || 'User';
+                }
+
+                // Show user management only for admins
+                if (userManagementLink) {
+                    const isAdmin = this.user && this.user.role === 'admin';
+                    userManagementLink.style.display = isAdmin ? 'block' : 'none';
+                    
+                    if (!isAdmin) {
+                        // If not admin, hide user management section
+                        document.getElementById('userManagementSection').style.display = 'none';
+                    }
+                }
+            }
+
+            setupEventListeners() {
+                // Change Password Form
+                document.getElementById('changePasswordForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.changePassword();
+                });
+
+                // Add User Form
+                document.getElementById('addUserFormElement').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.addUser();
+                });
+            }
+
+            async changePassword() {
+                const currentPassword = document.getElementById('currentPassword').value;
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+
+                if (newPassword !== confirmPassword) {
+                    this.showNotification('Passwords do not match', 'danger');
+                    return;
+                }
+
+                if (newPassword.length < 6) {
+                    this.showNotification('Password must be at least 6 characters long', 'danger');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/api/auth/change-password', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${this.authToken}`
+                        },
+                        body: JSON.stringify({
+                            currentPassword,
+                            newPassword
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        this.showNotification('Password changed successfully', 'success');
+                        document.getElementById('changePasswordForm').reset();
+                    } else {
+                        this.showNotification(data.message || 'Failed to change password', 'danger');
+                    }
+                } catch (error) {
+                    this.showNotification('Error changing password', 'danger');
+                }
+            }
+
+            async addUser() {
+                const username = document.getElementById('addUsername').value;
+                const password = document.getElementById('addPassword').value;
+
+                const role = document.getElementById('addRole').value;
+
+                if (password.length < 6) {
+                    this.showNotification('Password must be at least 6 characters long', 'danger');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/api/auth/users', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${this.authToken}`
+                        },
+                        body: JSON.stringify({ username, password, role })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        this.showNotification('User added successfully', 'success');
+                        document.getElementById('addUserFormElement').reset();
+                        this.hideAddUserForm();
+                        this.loadUsers();
+                    } else {
+                        this.showNotification(data.message || 'Failed to add user', 'danger');
+                    }
+                } catch (error) {
+                    this.showNotification('Error adding user', 'danger');
+                }
+            }
+
+            async loadUsers() {
+                if (this.user.role !== 'admin') return;
+
+                try {
+                    const response = await fetch('/api/auth/users', {
+                        headers: {
+                            'Authorization': `Bearer ${this.authToken}`
+                        }
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        this.renderUsers(data.users || data);
+                    }
+                } catch (error) {
+                    console.error('Error loading users:', error);
+                }
+            }
+
+            renderUsers(users) {
+                const usersList = document.getElementById('usersList');
+                if (!usersList) return;
+
+                usersList.innerHTML = users.map(user => `
+                    <div class="card bg-dark mb-2">
+                        <div class="card-body d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1 text-light">${this.escapeHtml(user.username)}</h6>
+                                <small class="text-light">
+                                    <i class="fas fa-user-tag me-1"></i>${user.role}
+
+                                    <span class="ms-2">
+                                        <i class="fas fa-calendar me-1"></i>
+                                        Created: ${new Date(user.created_at).toLocaleDateString()}
+                                    </span>
+                                </small>
+                            </div>
+                            <div>
+                                ${user.id !== this.user.id ? `
+                                    <button class="btn btn-danger btn-sm" onclick="app.deleteUser(${user.id})">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                ` : '<span class="badge bg-primary">Current User</span>'}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            async deleteUser(userId) {
+                if (!confirm('Are you sure you want to delete this user?')) return;
+
+                try {
+                    const response = await fetch(`/api/auth/users/${userId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${this.authToken}`
+                        }
+                    });
+
+                    if (response.ok) {
+                        this.showNotification('User deleted successfully', 'success');
+                        this.loadUsers();
+                    } else {
+                        const data = await response.json();
+                        this.showNotification(data.message || 'Failed to delete user', 'danger');
+                    }
+                } catch (error) {
+                    this.showNotification('Error deleting user', 'danger');
+                }
+            }
+
+            showNotification(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+                notification.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 300px;';
+                notification.innerHTML = `
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                document.body.appendChild(notification);
+
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 5000);
+            }
+
+            escapeHtml(text) {
+                const map = {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                };
+                return text.replace(/[&<>"']/g, m => map[m]);
+            }
+        }
+
+        // Global functions
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.style.display = 'none';
+            });
+
+            // Remove active class from all links
+            document.querySelectorAll('.list-group-item').forEach(link => {
+                link.classList.remove('active');
+            });
+
+            // Show selected section
+            document.getElementById(sectionName + 'Section').style.display = 'block';
+
+            // Add active class to clicked link
+            event.target.classList.add('active');
+        }
+
+        function showAddUserForm() {
+            document.getElementById('addUserForm').style.display = 'block';
+        }
+
+        function hideAddUserForm() {
+            document.getElementById('addUserForm').style.display = 'none';
+            document.getElementById('addUserFormElement').reset();
+        }
+
+        function logout() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('user');
+            window.location.href = '/login.html';
+        }
+
+        // Theme Toggle Functionality
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+            
+            if (body.classList.contains('light-theme')) {
+                // Switch to dark theme
+                body.classList.remove('light-theme');
+                themeIcon.className = 'fas fa-sun';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                // Switch to light theme
+                body.classList.add('light-theme');
+                themeIcon.className = 'fas fa-moon';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Load saved theme on page load
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+            
+            if (savedTheme === 'light') {
+                body.classList.add('light-theme');
+                if (themeIcon) themeIcon.className = 'fas fa-moon';
+            } else {
+                body.classList.remove('light-theme');
+                if (themeIcon) themeIcon.className = 'fas fa-sun';
+            }
+        }
+
+        // Initialize app
+        let app;
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTheme();
+            app = new ManagerApp();
+        });
+    </script>
+</body>
+</html>
